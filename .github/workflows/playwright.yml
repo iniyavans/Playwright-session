@@ -1,27 +1,59 @@
+# Name of the workflow as it appears in the GitHub Actions tab
 name: Playwright Tests
+
+# Specifies the events that will trigger the workflow
 on:
+  # Triggers when code is pushed to the specified branches
   push:
     branches: [ main, master ]
+  # Triggers when a pull request is opened or updated for the specified branches
   pull_request:
     branches: [ main, master ]
+
+# Defines all jobs that will run as part of the workflow
 jobs:
+  # Names the job 'test' for clarity in logs and output
   test:
+    # Sets a maximum time (in minutes) the job can run before it's automatically stopped
     timeout-minutes: 60
+    # Specifies the environment that the job will run on; here, we're using the latest Ubuntu image
     runs-on: ubuntu-latest
+
+    # Defines individual steps within the job
     steps:
+    # Step 1: Check out the code from the repository so it can be accessed by the workflow
     - uses: actions/checkout@v4
+
+    # Step 2: Set up Node.js environment, using the latest Long Term Support (LTS) version
     - uses: actions/setup-node@v4
       with:
+        # Sets the Node.js version to the latest LTS for stability and compatibility
         node-version: lts/*
+
+    # Step 3: Install project dependencies
     - name: Install dependencies
+      # 'npm ci' installs dependencies based on the exact versions in package-lock.json,
+      # ensuring consistency and faster installs than 'npm install'
       run: npm ci
+
+    # Step 4: Install necessary Playwright browser binaries and dependencies
     - name: Install Playwright Browsers
+      # Installs Playwright’s browser binaries and dependencies; '--with-deps' ensures required OS packages are installed
       run: npx playwright install --with-deps
+
+    # Step 5: Run Playwright tests
     - name: Run Playwright tests
+      # Executes the test suite configured in Playwright, using the Playwright test runner
       run: npx playwright test
+
+    # Step 6: Upload the Playwright test report as an artifact to review test results
     - uses: actions/upload-artifact@v4
+      # Ensures that the artifact is only uploaded if the job wasn’t canceled
       if: ${{ !cancelled() }}
       with:
+        # Names the artifact for easy identification in the GitHub Actions interface
         name: playwright-report
+        # Specifies the path to the report that should be uploaded as an artifact
         path: playwright-report/
+        # Retains the uploaded artifact for 30 days before automatic deletion
         retention-days: 30
