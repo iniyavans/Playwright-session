@@ -14,8 +14,6 @@ on:
 jobs:
   # Names the job 'test' for clarity in logs and output
   test:
-    # Sets a maximum time (in minutes) the job can run before it's automatically stopped
-    timeout-minutes: 60
     # Specifies the environment that the job will run on; here, we're using the latest Ubuntu image
     runs-on: ubuntu-latest
 
@@ -45,15 +43,3 @@ jobs:
     - name: Run Playwright tests
       # Executes the test suite configured in Playwright, using the Playwright test runner
       run: npx playwright test
-
-    # Step 6: Upload the Playwright test report as an artifact to review test results
-    - uses: actions/upload-artifact@v4
-      # Ensures that the artifact is only uploaded if the job wasn’t canceled
-      if: ${{ !cancelled() }}
-      with:
-        # Names the artifact for easy identification in the GitHub Actions interface
-        name: playwright-report
-        # Specifies the path to the report that should be uploaded as an artifact
-        path: playwright-report/
-        # Retains the uploaded artifact for 30 days before automatic deletion
-        retention-days: 30
