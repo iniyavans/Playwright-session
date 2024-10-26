@@ -5,7 +5,7 @@ test('Fetch user posts - GET request', async ({ request }) => {
     const response = await request.get('https://jsonplaceholder.typicode.com/posts/1');
 
     // Check if the request was successful
-    expect(response.status()).toBe(200);
+    expect(response.status()).toBe(500);
 
     // Parse response body as JSON
     const data = await response.json();
